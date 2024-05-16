@@ -5,8 +5,14 @@ const io = require("socket.io")(3001, {
     },
 });
 io.on("connection", (socket) => {
-    console.log("a user connected");
-    socket.on("send-message", (message) => {
-        io.emit("receive-message", message);
+    socket.on("send-message", (message, callback) => {
+        try {
+            io.emit("orders", message);
+
+            callback({ status: "success" });
+        } catch (error) {
+            console.error("Error processing message:", error);
+            callback({ status: "error", error: error.message });
+        }
     });
 });
